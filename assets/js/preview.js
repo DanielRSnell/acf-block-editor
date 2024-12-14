@@ -2,7 +2,6 @@ const ClientBlocksPreview = (function($) {
     // Configuration
     const config = {
         breakpoints: clientBlocksEditor.breakpoints || [],
-        aspectRatio: 9/16 // height/width ratio
     };
     
     // DOM Elements
@@ -31,37 +30,42 @@ const ClientBlocksPreview = (function($) {
     };
     
     const calculateFrameDimensions = (breakpoint) => {
-        const breakpointData = config.breakpoints.find(b => b.id === breakpoint);
-        const width = breakpointData ? breakpointData.width : 1024; // fallback to 1024 if no breakpoint
-        const height = Math.round(width * config.aspectRatio);
+        const $container = $(elements.container);
+        // Get computed dimensions of the container
+        const containerWidth = $container.width();
+        const containerHeight = $container.height();
         
-        return { width, height };
+        const breakpointData = config.breakpoints.find(b => b.id === breakpoint);
+        const targetWidth = breakpointData ? breakpointData.width : 1024;
+        
+        // Calculate scale needed to fit target width in container
+        const scale = containerWidth / targetWidth;
+        
+        // Calculate required frame height to fill container after scaling
+        const frameHeight = Math.ceil(containerHeight / scale);
+        
+        return {
+            width: targetWidth,
+            height: frameHeight,
+            scale: scale
+        };
     };
     
     const updatePreviewSize = (breakpoint) => {
         const $container = $(elements.container);
         const $frameContainer = $(elements.frameContainer);
         
-        // Get container dimensions
-        const containerWidth = $container.width();
-        const containerHeight = $container.height();
+        const { width, height, scale } = calculateFrameDimensions(breakpoint);
         
-        // Calculate frame dimensions based on breakpoint
-        const { width: frameWidth, height: frameHeight } = calculateFrameDimensions(breakpoint);
-        
-        // Calculate scale
-        const scale = Math.min(
-            containerWidth / frameWidth,
-            containerHeight / frameHeight,
-            1 // Never scale up
-        );
-        
-        // Apply new dimensions and scale
+        // Apply new dimensions and positioning
         $frameContainer.css({
-            width: `${frameWidth}px`,
-            height: `${frameHeight}px`,
+            width: `${width}px`,
+            height: `${height}px`,
             transform: `scale(${scale})`,
-            transformOrigin: 'center top'
+            transformOrigin: '0 0',  // Origin at top-left for predictable scaling
+            position: 'absolute',
+            left: '0',
+            top: '0'
         });
         
         // Update data attribute
@@ -70,13 +74,13 @@ const ClientBlocksPreview = (function($) {
         // Log calculations for debugging
         console.log({
             breakpoint,
-            containerWidth,
-            containerHeight,
-            frameWidth,
-            frameHeight,
+            containerWidth: $container.width(),
+            containerHeight: $container.height(),
+            frameWidth: width,
+            frameHeight: height,
             scale,
-            scaledWidth: frameWidth * scale,
-            scaledHeight: frameHeight * scale
+            computedHeight: height * scale,
+            computedWidth: width * scale
         });
     };
     
@@ -89,6 +93,9 @@ const ClientBlocksPreview = (function($) {
     
     // Initialize
     const init = () => {
+        // Ensure container has relative positioning for absolute positioning of frame
+        $(elements.container).css('position', 'relative');
+        
         // Set up event listeners
         $(document).on('click', elements.breakpointButtons, handleBreakpointClick);
         $(document).on('click', elements.settingsButton, handleSettingsClick);
