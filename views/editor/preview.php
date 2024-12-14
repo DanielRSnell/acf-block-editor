@@ -47,7 +47,7 @@
         ];
 
         // Render block using BlockRenderer
-        \ClientBlocks\Blocks\Registry\BlockRenderer::render(
+        $context = \ClientBlocks\Blocks\Registry\BlockRenderer::render(
             $block_arr,
             '',
             true,
@@ -57,6 +57,9 @@
         );
         ?>
     </div>
+    <script id="block-context" type="application/json">
+        <?php echo json_encode($context, JSON_PRETTY_PRINT); ?>
+    </script>
     <?php wp_footer(); ?>
 </body>
 </html>

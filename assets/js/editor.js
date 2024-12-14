@@ -4,6 +4,7 @@ const ClientBlocksEditor = (function($) {
     let editor;
     let currentTab = 'php';
     let blockData = {};
+    let contextEditor;
     
     // Configuration
     const config = {
@@ -21,6 +22,18 @@ const ClientBlocksEditor = (function($) {
             formatOnPaste: true,
             formatOnType: true,
             wrappingIndent: 'indent'
+        },
+        contextEditorOptions: {
+            value: '',
+            language: 'json',
+            theme: 'vs-dark',
+            readOnly: true,
+            minimap: { enabled: false },
+            automaticLayout: true,
+            fontSize: 14,
+            lineNumbers: 'on',
+            scrollBeyondLastLine: false,
+            wordWrap: 'on'
         }
     };
     
@@ -29,7 +42,8 @@ const ClientBlocksEditor = (function($) {
         php: 'php',
         template: 'html',
         css: 'css',
-        js: 'javascript'
+        js: 'javascript',
+        context: 'json'
     };
     
     // DOM Elements
@@ -106,6 +120,15 @@ const ClientBlocksEditor = (function($) {
         editor.setValue(blockData.fields[currentTab] || '');
     };
     
+    const updateContextEditor = () => {
+        const iframe = document.getElementById('preview-frame');
+        const contextScript = iframe.contentDocument.getElementById('block-context');
+        if (contextScript) {
+            const contextData = JSON.parse(contextScript.textContent);
+            contextEditor.setValue(JSON.stringify(contextData, null, 2));
+        }
+    };
+    
     // Event Handlers
     const handleTabClick = function() {
         const $tab = $(this);
@@ -121,7 +144,16 @@ const ClientBlocksEditor = (function($) {
         }
         
         currentTab = newTab;
-        updateEditor();
+        
+        if (currentTab === 'context') {
+            $(elements.editor).hide();
+            $('#context-editor').show();
+            updateContextEditor();
+        } else {
+            $(elements.editor).show();
+            $('#context-editor').hide();
+            updateEditor();
+        }
     };
     
     // Initialize
@@ -132,6 +164,18 @@ const ClientBlocksEditor = (function($) {
             editor = monaco.editor.create(
                 $(elements.editor)[0],
                 config.editorOptions
+            );
+            
+            const contextEditorContainer = document.createElement('div');
+            contextEditorContainer.id = 'context-editor';
+            contextEditorContainer.style.width = '100%';
+            contextEditorContainer.style.height = '100%';
+            contextEditorContainer.style.display = 'none';
+            $(elements.editor).after(contextEditorContainer);
+            
+            contextEditor = monaco.editor.create(
+                contextEditorContainer,
+                config.contextEditorOptions
             );
             
             api.loadBlock();
@@ -145,6 +189,8 @@ const ClientBlocksEditor = (function($) {
                     api.saveBlock();
                 }
             });
+            
+            $(elements.preview).on('load', updateContextEditor);
         });
     };
     

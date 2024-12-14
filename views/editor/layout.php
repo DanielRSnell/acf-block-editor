@@ -54,6 +54,9 @@
                     <button type="button" class="tab-button" data-tab="js" title="JavaScript">
                         <ion-icon name="logo-javascript"></ion-icon>
                     </button>
+                    <button type="button" class="tab-button" data-tab="context" title="Block Context">
+                        <ion-icon name="eye-outline"></ion-icon>
+                    </button>
                 </div>
                 <div class="editor-settings">
                     <button type="button" class="settings-button" title="Block Settings">
