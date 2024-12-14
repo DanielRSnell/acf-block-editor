@@ -1,177 +1,176 @@
 .breakpoint-controls {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--spacing-xs);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .breakpoint-button {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: 1px solid var(--border-2);
-    background: var(--bg-surface);
-    color: var(--text-2);
-    border-radius: var(--radius-2);
-    font-size: var(--font-size-0);
-    cursor: pointer;
-    transition: all var(--animation-fade);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border-2);
+  background: var(--bg-surface);
+  color: var(--text-2);
+  border-radius: var(--radius-2);
+  font-size: var(--font-size-0);
+  cursor: pointer;
+  transition: all var(--animation-fade);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .breakpoint-button ion-icon {
-    font-size: var(--font-size-2);
+  font-size: var(--font-size-2);
 }
 
 .breakpoint-button:hover,
 .breakpoint-button.active {
-    background: var(--accent-1);
-    border-color: var(--accent-2);
-    color: var(--text-1);
+  background: var(--accent-1);
+  border-color: var(--accent-2);
+  color: var(--text-1);
 }
 
 .breakpoint-settings {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: 1px solid var(--border-2);
-    background: var(--bg-surface);
-    color: var(--text-2);
-    border-radius: var(--radius-2);
-    font-size: var(--font-size-0);
-    cursor: pointer;
-    transition: all var(--animation-fade);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: var(--spacing-md);
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border-2);
+  background: var(--bg-surface);
+  color: var(--text-2);
+  border-radius: var(--radius-2);
+  font-size: var(--font-size-0);
+  cursor: pointer;
+  transition: all var(--animation-fade);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--spacing-md);
 }
 
 .breakpoint-settings:hover {
-    background: var(--bg-surface-3);
-    color: var(--text-1);
+  background: var(--bg-surface-3);
+  color: var(--text-1);
 }
 
 .breakpoint-settings ion-icon {
-    font-size: var(--font-size-2);
+  font-size: var(--font-size-2);
 }
 
-/* Modal styles */
 .modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: var(--layer-modal);
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--layer-modal);
 }
 
 .modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--bg-surface);
-    border-radius: var(--radius-3);
-    width: 90%;
-    max-width: 600px;
-    box-shadow: var(--shadow-4);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-surface);
+  border-radius: var(--radius-3);
+  width: 90%;
+  max-width: 600px;
+  box-shadow: var(--shadow-4);
 }
 
 .modal-header {
-    padding: var(--spacing-md);
-    border-bottom: 1px solid var(--border-1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .modal-header h2 {
-    margin: 0;
-    font-size: var(--font-size-2);
-    color: var(--text-1);
+  margin: 0;
+  font-size: var(--font-size-2);
+  color: var(--text-1);
 }
 
 .close-modal {
-    background: none;
-    border: none;
-    color: var(--text-2);
-    font-size: var(--font-size-4);
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
+  background: none;
+  border: none;
+  color: var(--text-2);
+  font-size: var(--font-size-4);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
 }
 
 .close-modal:hover {
-    color: var(--text-1);
+  color: var(--text-1);
 }
 
 .modal-body {
-    padding: var(--spacing-md);
+  padding: var(--spacing-md);
 }
 
 .modal-footer {
-    padding: var(--spacing-md);
-    border-top: 1px solid var(--border-1);
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-1);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
 }
 
 .breakpoints-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
 }
 
 .breakpoint-item {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto auto;
-    gap: var(--spacing-sm);
-    align-items: center;
-    padding: var(--spacing-sm);
-    background: var(--bg-surface-2);
-    border-radius: var(--radius-2);
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: var(--spacing-sm);
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: var(--bg-surface-2);
+  border-radius: var(--radius-2);
 }
 
 .breakpoint-item input,
 .breakpoint-item select {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-2);
-    color: var(--text-1);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-2);
-    font-size: var(--font-size-0);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-2);
+  color: var(--text-1);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-2);
+  font-size: var(--font-size-0);
 }
 
 .add-breakpoint,
 .save-breakpoints {
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--accent-1);
-    border: 1px solid var(--accent-2);
-    color: var(--text-1);
-    border-radius: var(--radius-2);
-    cursor: pointer;
-    transition: all var(--animation-fade);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--accent-1);
+  border: 1px solid var(--accent-2);
+  color: var(--text-1);
+  border-radius: var(--radius-2);
+  cursor: pointer;
+  transition: all var(--animation-fade);
 }
 
 .add-breakpoint:hover,
 .save-breakpoints:hover {
-    background: var(--accent-2);
+  background: var(--accent-2);
 }
 
 .remove-breakpoint {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--error);
-    border: 1px solid var(--red-8);
-    color: var(--text-1);
-    border-radius: var(--radius-2);
-    cursor: pointer;
-    transition: all var(--animation-fade);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--error);
+  border: 1px solid var(--red-8);
+  color: var(--text-1);
+  border-radius: var(--radius-2);
+  cursor: pointer;
+  transition: all var(--animation-fade);
 }
 
 .remove-breakpoint:hover {
-    background: var(--red-8);
+  background: var(--red-8);
 }

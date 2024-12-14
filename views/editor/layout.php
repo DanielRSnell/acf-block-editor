@@ -4,10 +4,9 @@
     <meta charset="<?php bloginfo('charset');?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo esc_html($block->post_title); ?> - Block Editor</title>
+    <?php wp_head();?>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <?php wp_head();?>
 </head>
 <body class="client-blocks-editor-page">
     <div class="client-blocks-editor">
@@ -18,17 +17,17 @@
             </div>
             <div class="breakpoint-controls">
                 <?php
-$breakpoints = \ClientBlocks\Admin\Editor\BreakpointManager::instance()->get_breakpoints();
-foreach ($breakpoints as $breakpoint):
-    $title = $breakpoint['width'] ? "{$breakpoint['name']} ({$breakpoint['width']}px)" : $breakpoint['name'];
-    ?>
-			                    <button type="button"
-			                            class="breakpoint-button<?php echo $breakpoint['id'] === 'full' ? ' active' : ''; ?>"
-			                            data-breakpoint="<?php echo esc_attr($breakpoint['id']); ?>"
-			                            title="<?php echo esc_attr($title); ?>">
-			                        <ion-icon name="<?php echo esc_attr($breakpoint['icon']); ?>"></ion-icon>
-			                    </button>
-			                <?php endforeach;?>
+                $breakpoints = \ClientBlocks\Admin\Editor\BreakpointManager::instance()->get_breakpoints();
+                foreach ($breakpoints as $breakpoint):
+                    $title = $breakpoint['width'] ? "{$breakpoint['name']} ({$breakpoint['width']}px)" : $breakpoint['name'];
+                    ?>
+                    <button type="button"
+                            class="breakpoint-button<?php echo $breakpoint['id'] === 'full' ? ' active' : ''; ?>"
+                            data-breakpoint="<?php echo esc_attr($breakpoint['id']); ?>"
+                            title="<?php echo esc_attr($title); ?>">
+                        <ion-icon name="<?php echo esc_attr($breakpoint['icon']); ?>"></ion-icon>
+                    </button>
+                <?php endforeach;?>
                 <button type="button" class="breakpoint-settings" title="Breakpoint Settings">
                     <ion-icon name="settings-outline"></ion-icon>
                 </button>
@@ -76,6 +75,5 @@ foreach ($breakpoints as $breakpoint):
         </div>
     </div>
     <?php wp_footer();?>
-    <script src="<?php echo plugins_url('assets/js/preview.js', dirname(dirname(dirname(__FILE__)))); ?>"></script>
 </body>
 </html>

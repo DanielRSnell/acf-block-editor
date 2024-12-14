@@ -1,14 +1,8 @@
-/* Import Open Props */
 @import "https://unpkg.com/open-props/open-props.min.css";
-
-/* Import Local Styles */
 @import "./variables.css";
 @import "./reset.css";
 @import "./layout.css";
-@import "./components/header.css";
-@import "./components/sidebar.css";
 
-/* Editor Layout */
 .client-blocks-editor {
   position: fixed !important;
   inset: 0 !important;
@@ -41,23 +35,12 @@
   min-width: 0;
 }
 
-.editor-preview {
-  width: 50%;
-  border-left: 1px solid var(--border-1);
-  background: var(--bg-surface);
-  flex: 0 0 auto;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Editor Component */
 #monaco-editor {
   position: absolute;
   inset: 0;
   height: 100% !important;
 }
 
-/* Monaco Editor Overrides */
 .monaco-editor {
   --monaco-monospace-font: "JetBrains Mono", "SF Mono", Monaco, Consolas, "Ubuntu Mono", monospace;
 }
@@ -70,7 +53,6 @@
   opacity: 0.6;
 }
 
-/* Monaco Editor Theme Overrides */
 .monaco-editor .monaco-scrollable-element > .scrollbar > .slider {
   background: var(--gray-8) !important;
 }
@@ -79,18 +61,15 @@
   background: var(--gray-7) !important;
 }
 
-/* Line Numbers */
 .monaco-editor .margin-view-overlays .line-numbers {
   color: var(--text-3) !important;
 }
 
-/* Current Line Highlight */
 .monaco-editor .current-line {
   border: none !important;
   background: var(--gray-11) !important;
 }
 
-/* Selection */
 .monaco-editor .selected-text {
   background: var(--gray-8) !important;
 }

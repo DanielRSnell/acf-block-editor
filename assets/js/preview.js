@@ -1,7 +1,7 @@
 const ClientBlocksPreview = (function($) {
     // Configuration
     const config = {
-        defaultWidth: 1024,
+        breakpoints: clientBlocksEditor.breakpoints || [],
         aspectRatio: 9/16 // height/width ratio
     };
     
@@ -9,77 +9,99 @@ const ClientBlocksPreview = (function($) {
     const elements = {
         container: '.preview-container',
         frameContainer: '.preview-frame-container',
-        frame: '#preview-frame'
+        frame: '#preview-frame',
+        breakpointButtons: '.breakpoint-button',
+        settingsButton: '.breakpoint-settings'
     };
     
-    const calculatePreviewDimensions = () => {
+    // State
+    let currentBreakpoint = null;
+    
+    // Event Handlers
+    const handleBreakpointClick = function(e) {
+        e.preventDefault();
+        const $button = $(this);
+        const breakpoint = $button.data('breakpoint');
+        
+        $(elements.breakpointButtons).removeClass('active');
+        $button.addClass('active');
+        
+        updatePreviewSize(breakpoint);
+        currentBreakpoint = breakpoint;
+    };
+    
+    const calculateFrameDimensions = (breakpoint) => {
+        const breakpointData = config.breakpoints.find(b => b.id === breakpoint);
+        const width = breakpointData ? breakpointData.width : 1024; // fallback to 1024 if no breakpoint
+        const height = Math.round(width * config.aspectRatio);
+        
+        return { width, height };
+    };
+    
+    const updatePreviewSize = (breakpoint) => {
         const $container = $(elements.container);
         const $frameContainer = $(elements.frameContainer);
         
-        // Get exact computed dimensions of container
-        const containerWidth = $container[0].getBoundingClientRect().width;
-        const containerHeight = $container[0].getBoundingClientRect().height;
+        // Get container dimensions
+        const containerWidth = $container.width();
+        const containerHeight = $container.height();
         
-        // Get target width (either from breakpoint or default)
-        const targetWidth = parseInt($frameContainer.data('width')) || config.defaultWidth;
-        const targetHeight = Math.round(targetWidth * config.aspectRatio);
+        // Calculate frame dimensions based on breakpoint
+        const { width: frameWidth, height: frameHeight } = calculateFrameDimensions(breakpoint);
         
-        // Calculate scale based on container constraints
-        const widthScale = containerWidth / targetWidth;
-        const heightScale = containerHeight / targetHeight;
-        const scale = Math.min(widthScale, heightScale);
+        // Calculate scale
+        const scale = Math.min(
+            containerWidth / frameWidth,
+            containerHeight / frameHeight,
+            1 // Never scale up
+        );
         
-        return {
-            width: targetWidth,
-            height: targetHeight,
-            scale: scale
-        };
-    };
-    
-    const updatePreviewSize = () => {
-        const $frameContainer = $(elements.frameContainer);
-        const dimensions = calculatePreviewDimensions();
-        
-        // Apply the calculated dimensions and scale
+        // Apply new dimensions and scale
         $frameContainer.css({
-            width: `${dimensions.width}px`,
-            height: `${dimensions.height}px`,
-            transform: `scale(${dimensions.scale})`,
-            transformOrigin: 'center top',
-            position: 'relative',
-            left: '50%',
-            marginLeft: `-${dimensions.width / 2}px`
+            width: `${frameWidth}px`,
+            height: `${frameHeight}px`,
+            transform: `scale(${scale})`,
+            transformOrigin: 'center top'
         });
         
+        // Update data attribute
+        $frameContainer.attr('data-breakpoint', breakpoint);
+        
         // Log calculations for debugging
-        console.log('Preview dimensions:', {
-            container: {
-                width: $(elements.container)[0].getBoundingClientRect().width,
-                height: $(elements.container)[0].getBoundingClientRect().height
-            },
-            frame: dimensions,
-            scaled: {
-                width: dimensions.width * dimensions.scale,
-                height: dimensions.height * dimensions.scale
-            }
+        console.log({
+            breakpoint,
+            containerWidth,
+            containerHeight,
+            frameWidth,
+            frameHeight,
+            scale,
+            scaledWidth: frameWidth * scale,
+            scaledHeight: frameHeight * scale
         });
     };
     
     // Handle window resize
-    const handleResize = _.debounce(() => {
-        updatePreviewSize();
-    }, 250);
+    const handleResize = function() {
+        if (currentBreakpoint) {
+            updatePreviewSize(currentBreakpoint);
+        }
+    };
     
     // Initialize
     const init = () => {
-        // Initial update
-        updatePreviewSize();
-        
         // Set up event listeners
-        $(window).on('resize', handleResize);
+        $(document).on('click', elements.breakpointButtons, handleBreakpointClick);
+        $(document).on('click', elements.settingsButton, handleSettingsClick);
+        $(window).on('resize', _.debounce(handleResize, 250));
         
-        // Handle iframe load
-        $(elements.frame).on('load', updatePreviewSize);
+        // Set initial breakpoint
+        const $frameContainer = $(elements.frameContainer);
+        const initialBreakpoint = $frameContainer.data('breakpoint') || 'full';
+        updatePreviewSize(initialBreakpoint);
+        currentBreakpoint = initialBreakpoint;
+        
+        // Highlight the corresponding button
+        $(elements.breakpointButtons + `[data-breakpoint="${initialBreakpoint}"]`).addClass('active');
     };
     
     return {

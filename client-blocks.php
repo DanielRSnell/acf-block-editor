@@ -33,3 +33,7 @@ add_action('plugins_loaded', function () {
     // Initialize plugin
     \ClientBlocks\Plugin::instance();
 });
+
+// Define plugin constants
+define('CLIENT_BLOCKS_PATH', plugin_dir_path(__FILE__));
+define('CLIENT_BLOCKS_URL', plugin_dir_url(__FILE__));
