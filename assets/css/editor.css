@@ -1,0 +1,10 @@
+/* Import Open Props */
+@import "https://unpkg.com/open-props/open-props.min.css";
+
+/* Import Local Styles */
+@import "./variables.css";
+@import "./reset.css";
+@import "./layout.css";
+@import "./components/header.css";
+@import "./components/sidebar.css";
+@import "./components/editor.css";

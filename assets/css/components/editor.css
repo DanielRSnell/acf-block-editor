@@ -1,0 +1,57 @@
+/* Editor Component */
+#monaco-editor {
+  position: absolute;
+  inset: 0;
+  height: 100% !important;
+}
+
+#preview-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: var(--bg-surface);
+}
+
+/* Monaco Editor Overrides */
+.monaco-editor {
+  --monaco-monospace-font: "JetBrains Mono", "SF Mono", Monaco, Consolas, "Ubuntu Mono", monospace;
+}
+
+.monaco-editor .margin {
+  background: var(--bg-surface) !important;
+}
+
+.monaco-editor .minimap {
+  opacity: 0.6;
+}
+
+/* Monaco Editor Theme Overrides */
+.monaco-editor .monaco-scrollable-element > .scrollbar > .slider {
+  background: var(--gray-8) !important;
+}
+
+.monaco-editor .monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: var(--gray-7) !important;
+}
+
+/* Line Numbers */
+.monaco-editor .margin-view-overlays .line-numbers {
+  color: var(--text-3) !important;
+}
+
+/* Current Line Highlight */
+.monaco-editor .current-line {
+  border: none !important;
+  background: var(--gray-11) !important;
+}
+
+/* Selection */
+.monaco-editor .selected-text {
+  background: var(--gray-8) !important;
+}
+
+.monaco-editor .monaco-editor-background {
+  background: var(--bg-surface) !important;
+}

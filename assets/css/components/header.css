@@ -1,0 +1,59 @@
+/* Header Component */
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-md);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-1);
+  height: var(--header-height);
+  flex: 0 0 auto;
+}
+
+.editor-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.editor-logo ion-icon {
+  font-size: var(--font-size-3);
+  color: var(--text-2);
+}
+
+.editor-logo span:not(ion-icon) {
+  font-size: var(--font-size-1);
+  font-weight: var(--font-weight-5);
+  color: var(--text-1);
+}
+
+#save-block {
+  min-width: var(--size-12);
+  height: var(--size-7);
+  padding: 0 var(--spacing-md);
+  transition: all var(--animation-fade);
+  background: var(--accent-1);
+  border-color: var(--accent-2);
+  color: var(--text-1);
+  font-size: var(--font-size-1);
+  line-height: 1;
+}
+
+#save-block:hover {
+  background: var(--accent-2);
+}
+
+#save-block:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+#save-block.error {
+  background: var(--error);
+  border-color: var(--red-8);
+}
+
+#save-block.success {
+  background: var(--success);
+  border-color: var(--green-8);
+}
