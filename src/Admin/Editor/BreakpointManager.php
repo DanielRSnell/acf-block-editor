@@ -28,32 +28,44 @@ class BreakpointManager {
         return [
             [
                 'id' => 'xs',
-                'name' => 'Mobile',
+                'name' => 'X-Small',
                 'width' => 375,
                 'icon' => 'phone-portrait-outline'
             ],
             [
                 'id' => 'sm',
-                'name' => 'Small Tablet',
-                'width' => 640,
+                'name' => 'Small',
+                'width' => 576,
                 'icon' => 'phone-landscape-outline'
             ],
             [
                 'id' => 'md',
-                'name' => 'Tablet',
+                'name' => 'Medium',
                 'width' => 768,
-                'icon' => 'tablet-landscape-outline'
+                'icon' => 'tablet-portrait-outline'
             ],
             [
                 'id' => 'lg',
-                'name' => 'Laptop',
-                'width' => 1024,
+                'name' => 'Large',
+                'width' => 992,
+                'icon' => 'tablet-landscape-outline'
+            ],
+            [
+                'id' => 'xl',
+                'name' => 'Extra Large',
+                'width' => 1200,
                 'icon' => 'laptop-outline'
             ],
             [
-                'id' => 'full',
-                'name' => 'Full Width',
-                'width' => null,
+                'id' => 'xxl',
+                'name' => 'Extra Extra Large',
+                'width' => 1400,
+                'icon' => 'desktop-outline'
+            ],
+            [
+                'id' => 'retina',
+                'name' => 'Retina',
+                'width' => 2560,
                 'icon' => 'expand-outline'
             ]
         ];

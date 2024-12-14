@@ -58,12 +58,22 @@
   font-size: var(--font-size-2);
 }
 
+.ui-tooltip {
+  background: var(--bg-surface-2);
+  color: var(--text-1);
+  border: 1px solid var(--border-1);
+  padding: 8px;
+  border-radius: var(--radius-2);
+  font-size: var(--font-size-0);
+  box-shadow: var(--shadow-2);
+}
+
 .modal {
   display: none;
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: var(--layer-modal);
+  z-index: 99999999999;
 }
 
 .modal-content {
@@ -75,10 +85,15 @@
   border-radius: var(--radius-3);
   width: 90%;
   max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
   box-shadow: var(--shadow-4);
 }
 
 .modal-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-surface);
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--border-1);
   display: flex;
@@ -111,6 +126,9 @@
 }
 
 .modal-footer {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-surface);
   padding: var(--spacing-md);
   border-top: 1px solid var(--border-1);
   display: flex;
@@ -137,23 +155,38 @@
 
 .breakpoint-item input,
 .breakpoint-item select {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-2);
-  color: var(--text-1);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-2);
-  font-size: var(--font-size-0);
+  width: 100% !important;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-2) !important;
+  color: var(--text-1) !important;
+  padding: var(--spacing-xs) var(--spacing-sm) !important;
+  border-radius: var(--radius-2) !important;
+  font-size: var(--font-size-0) !important;
+  height: var(--size-7) !important;
+  line-height: var(--size-7) !important;
+  transition: all var(--animation-fade);
+}
+
+.breakpoint-item input:focus,
+.breakpoint-item select:focus {
+  outline: none;
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 2px var(--accent-2);
 }
 
 .add-breakpoint,
-.save-breakpoints {
-  padding: var(--spacing-sm) var(--spacing-md);
+.save-breakpoints,
+.remove-breakpoint {
+  padding: var(--spacing-xs) var(--spacing-sm);
   background: var(--accent-1);
   border: 1px solid var(--accent-2);
   color: var(--text-1);
   border-radius: var(--radius-2);
   cursor: pointer;
   transition: all var(--animation-fade);
+  font-size: var(--font-size-0);
+  line-height: 1;
+  height: var(--size-7);
 }
 
 .add-breakpoint:hover,
@@ -162,13 +195,8 @@
 }
 
 .remove-breakpoint {
-  padding: var(--spacing-xs) var(--spacing-sm);
   background: var(--error);
-  border: 1px solid var(--red-8);
-  color: var(--text-1);
-  border-radius: var(--radius-2);
-  cursor: pointer;
-  transition: all var(--animation-fade);
+  border-color: var(--red-8);
 }
 
 .remove-breakpoint:hover {

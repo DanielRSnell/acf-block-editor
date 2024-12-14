@@ -7,6 +7,8 @@
     <?php wp_head();?>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 </head>
 <body class="client-blocks-editor-page">
     <div class="client-blocks-editor">
@@ -19,10 +21,10 @@
                 <?php
                 $breakpoints = \ClientBlocks\Admin\Editor\BreakpointManager::instance()->get_breakpoints();
                 foreach ($breakpoints as $breakpoint):
-                    $title = $breakpoint['width'] ? "{$breakpoint['name']} ({$breakpoint['width']}px)" : $breakpoint['name'];
+                    $title = "{$breakpoint['name']} ({$breakpoint['width']}px)";
                     ?>
                     <button type="button"
-                            class="breakpoint-button<?php echo $breakpoint['id'] === 'full' ? ' active' : ''; ?>"
+                            class="breakpoint-button"
                             data-breakpoint="<?php echo esc_attr($breakpoint['id']); ?>"
                             title="<?php echo esc_attr($title); ?>">
                         <ion-icon name="<?php echo esc_attr($breakpoint['icon']); ?>"></ion-icon>
@@ -66,7 +68,7 @@
                 </div>
                 <div class="editor-preview">
                     <div class="preview-container" style="width: 100%; height: 100%;">
-                        <div class="preview-frame-container" data-breakpoint="full">
+                        <div class="preview-frame-container" data-breakpoint="xl">
                             <iframe id="preview-frame" src="<?php echo esc_url(home_url("client-blocks/preview/{$block->ID}")); ?>" style="max-width: 100%; width: 100%; height: 100%;"></iframe>
                         </div>
                     </div>

@@ -1,16 +1,13 @@
-// Breakpoints Module
 const ClientBlocksBreakpoints = (function($) {
-    // State
     let breakpoints = [];
     
-    // DOM Elements
     const elements = {
         controls: '.breakpoint-controls',
         settingsButton: '.breakpoint-settings',
-        modal: '#breakpoint-settings-modal'
+        modal: '#breakpoint-settings-modal',
+        breakpointsList: '.breakpoints-list'
     };
     
-    // API Methods
     const api = {
         loadBreakpoints: async () => {
             try {
@@ -22,6 +19,10 @@ const ClientBlocksBreakpoints = (function($) {
                 breakpoints = response;
                 renderBreakpointButtons();
                 
+                const xlBreakpoint = breakpoints.find(b => b.id === 'xl');
+                if (xlBreakpoint) {
+                    $(`.breakpoint-button[data-breakpoint="${xlBreakpoint.id}"]`).click();
+                }
             } catch (error) {
                 console.error('Error loading breakpoints:', error);
             }
@@ -48,7 +49,6 @@ const ClientBlocksBreakpoints = (function($) {
         }
     };
     
-    // Render Methods
     const renderBreakpointButtons = () => {
         const $controls = $(elements.controls);
         $controls.empty();
@@ -65,17 +65,30 @@ const ClientBlocksBreakpoints = (function($) {
             $controls.append($button);
         });
         
-        // Add settings button
         $controls.append(`
             <button type="button" class="breakpoint-settings" title="Breakpoint Settings">
                 <ion-icon name="settings-outline"></ion-icon>
             </button>
         `);
+
+        $('[title]').tooltip({
+            position: { my: "center bottom", at: "center top-10" }
+        });
     };
     
     const renderBreakpointsList = () => {
-        const $list = $('.breakpoints-list');
+        const $list = $(elements.breakpointsList);
+        if ($list.length === 0) {
+            console.error('Breakpoints list element not found');
+            return;
+        }
+        
         $list.empty();
+        
+        if (breakpoints.length === 0) {
+            $list.append('<p>No breakpoints available.</p>');
+            return;
+        }
         
         breakpoints.forEach((breakpoint, index) => {
             $list.append(`
@@ -92,21 +105,22 @@ const ClientBlocksBreakpoints = (function($) {
     };
     
     const getIconOptions = (selectedIcon) => {
-        const icons = ['phone-portrait-outline', 'phone-landscape-outline', 'tablet-landscape-outline', 'laptop-outline', 'desktop-outline', 'expand-outline'];
+        const icons = ['phone-portrait-outline', 'phone-landscape-outline', 'tablet-portrait-outline', 'tablet-landscape-outline', 'laptop-outline', 'desktop-outline', 'expand-outline'];
         return icons.map(icon => `<option value="${icon}" ${icon === selectedIcon ? 'selected' : ''}>${icon}</option>`).join('');
     };
     
-    // Event Handlers
     const openBreakpointSettings = () => {
+        console.log('Opening breakpoint settings modal');
         const $modal = $(elements.modal);
         if (!$modal.length) {
+            console.log('Creating new modal');
             createSettingsModal();
-            console.log('Modal created successfully');
         } else {
+            console.log('Updating existing modal');
             renderBreakpointsList();
-            console.log('Modal already exists, updated content');
         }
         $(elements.modal).show();
+        console.log('Modal should now be visible');
     };
     
     const createSettingsModal = () => {
@@ -175,14 +189,17 @@ const ClientBlocksBreakpoints = (function($) {
         closeModal();
     };
     
-    // Initialize
     const init = () => {
         api.loadBreakpoints();
+        $(document).on('click', elements.settingsButton, function(e) {
+            e.preventDefault();
+            console.log('Settings button clicked');
+            openBreakpointSettings();
+        });
     };
     
     return {
-        init: init,
-        openBreakpointSettings: openBreakpointSettings
+        init: init
     };
     
 })(jQuery);
