@@ -22,13 +22,13 @@ $breakpoints = \ClientBlocks\Admin\Editor\BreakpointManager::instance()->get_bre
 foreach ($breakpoints as $breakpoint):
     $title = $breakpoint['width'] ? "{$breakpoint['name']} ({$breakpoint['width']}px)" : $breakpoint['name'];
     ?>
-		                    <button type="button"
-		                            class="breakpoint-button<?php echo $breakpoint['id'] === 'full' ? ' active' : ''; ?>"
-		                            data-breakpoint="<?php echo esc_attr($breakpoint['id']); ?>"
-		                            title="<?php echo esc_attr($title); ?>">
-		                        <ion-icon name="<?php echo esc_attr($breakpoint['icon']); ?>"></ion-icon>
-		                    </button>
-		                <?php endforeach;?>
+			                    <button type="button"
+			                            class="breakpoint-button<?php echo $breakpoint['id'] === 'full' ? ' active' : ''; ?>"
+			                            data-breakpoint="<?php echo esc_attr($breakpoint['id']); ?>"
+			                            title="<?php echo esc_attr($title); ?>">
+			                        <ion-icon name="<?php echo esc_attr($breakpoint['icon']); ?>"></ion-icon>
+			                    </button>
+			                <?php endforeach;?>
                 <button type="button" class="breakpoint-settings" title="Breakpoint Settings">
                     <ion-icon name="settings-outline"></ion-icon>
                 </button>
@@ -66,9 +66,9 @@ foreach ($breakpoints as $breakpoint):
                     <div id="monaco-editor"></div>
                 </div>
                 <div class="editor-preview">
-                    <div class="preview-container">
+                    <div class="preview-container" style="width: 100%; height: 100%;">
                         <div class="preview-frame-container" data-breakpoint="full">
-                            <iframe id="preview-frame" src="<?php echo esc_url(home_url("client-blocks/preview/{$block->ID}")); ?>"></iframe>
+                            <iframe id="preview-frame" src="<?php echo esc_url(home_url("client-blocks/preview/{$block->ID}")); ?>" style="max-width: 100%; width: 100%; height: 100%;"></iframe>
                         </div>
                     </div>
                 </div>
@@ -76,5 +76,6 @@ foreach ($breakpoints as $breakpoint):
         </div>
     </div>
     <?php wp_footer();?>
+    <script src="<?php echo plugins_url('assets/js/preview.js', dirname(dirname(dirname(__FILE__)))); ?>"></script>
 </body>
 </html>

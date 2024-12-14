@@ -1,60 +1,95 @@
-// Preview Module
 const ClientBlocksPreview = (function($) {
     // Configuration
     const config = {
-        breakpoints: clientBlocksEditor.breakpoints || []
+        defaultWidth: 1024,
+        aspectRatio: 9/16 // height/width ratio
     };
     
     // DOM Elements
     const elements = {
-        container: '.preview-frame-container',
-        frame: '#preview-frame',
-        breakpointButtons: '.breakpoint-button'
+        container: '.preview-container',
+        frameContainer: '.preview-frame-container',
+        frame: '#preview-frame'
     };
     
-    // State
-    let currentBreakpoint = 'full';
-    
-    // Event Handlers
-    const handleBreakpointClick = function(e) {
-        e.preventDefault();
-        const $button = $(this);
-        const breakpoint = $button.data('breakpoint');
+    const calculatePreviewDimensions = () => {
+        const $container = $(elements.container);
+        const $frameContainer = $(elements.frameContainer);
         
-        if (currentBreakpoint === breakpoint) return;
+        // Get exact computed dimensions of container
+        const containerWidth = $container[0].getBoundingClientRect().width;
+        const containerHeight = $container[0].getBoundingClientRect().height;
         
-        $(elements.breakpointButtons).removeClass('active');
-        $button.addClass('active');
+        // Get target width (either from breakpoint or default)
+        const targetWidth = parseInt($frameContainer.data('width')) || config.defaultWidth;
+        const targetHeight = Math.round(targetWidth * config.aspectRatio);
         
-        $(elements.container).attr('data-breakpoint', breakpoint);
-        currentBreakpoint = breakpoint;
+        // Calculate scale based on container constraints
+        const widthScale = containerWidth / targetWidth;
+        const heightScale = containerHeight / targetHeight;
+        const scale = Math.min(widthScale, heightScale);
         
-        // Update preview container width based on breakpoint
-        const breakpointData = config.breakpoints.find(b => b.id === breakpoint);
-        if (breakpointData && breakpointData.width) {
-            $(elements.container).css('max-width', breakpointData.width + 'px');
-        } else {
-            $(elements.container).css('max-width', 'none');
-        }
+        return {
+            width: targetWidth,
+            height: targetHeight,
+            scale: scale
+        };
     };
+    
+    const updatePreviewSize = () => {
+        const $frameContainer = $(elements.frameContainer);
+        const dimensions = calculatePreviewDimensions();
+        
+        // Apply the calculated dimensions and scale
+        $frameContainer.css({
+            width: `${dimensions.width}px`,
+            height: `${dimensions.height}px`,
+            transform: `scale(${dimensions.scale})`,
+            transformOrigin: 'center top',
+            position: 'relative',
+            left: '50%',
+            marginLeft: `-${dimensions.width / 2}px`
+        });
+        
+        // Log calculations for debugging
+        console.log('Preview dimensions:', {
+            container: {
+                width: $(elements.container)[0].getBoundingClientRect().width,
+                height: $(elements.container)[0].getBoundingClientRect().height
+            },
+            frame: dimensions,
+            scaled: {
+                width: dimensions.width * dimensions.scale,
+                height: dimensions.height * dimensions.scale
+            }
+        });
+    };
+    
+    // Handle window resize
+    const handleResize = _.debounce(() => {
+        updatePreviewSize();
+    }, 250);
     
     // Initialize
     const init = () => {
-        $(elements.breakpointButtons).on('click', handleBreakpointClick);
+        // Initial update
+        updatePreviewSize();
         
-        // Set initial breakpoint
-        const $defaultButton = $(elements.breakpointButtons).filter('[data-breakpoint="full"]');
-        if ($defaultButton.length) {
-            $defaultButton.trigger('click');
-        }
+        // Set up event listeners
+        $(window).on('resize', handleResize);
+        
+        // Handle iframe load
+        $(elements.frame).on('load', updatePreviewSize);
     };
     
     return {
-        init: init
+        init: init,
+        updatePreviewSize: updatePreviewSize
     };
     
 })(jQuery);
 
+// Initialize on document ready
 jQuery(document).ready(function() {
     ClientBlocksPreview.init();
 });

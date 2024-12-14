@@ -73,6 +73,15 @@ class EditorPage {
             true
         );
         
+        // Enqueue preview script
+        wp_enqueue_script(
+            'client-blocks-preview',
+            plugins_url('assets/js/preview.js', dirname(dirname(__DIR__))),
+            ['jquery', 'client-blocks-editor', 'client-blocks-breakpoints'],
+            filemtime(dirname(dirname(dirname(__DIR__))) . '/assets/js/preview.js'),
+            true
+        );
+        
         // Localize script
         wp_localize_script('client-blocks-editor', 'clientBlocksEditor', [
             'restUrl' => rest_url('client-blocks/v1'),

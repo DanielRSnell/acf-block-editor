@@ -2,11 +2,9 @@
 const ClientBlocksBreakpoints = (function($) {
     // State
     let breakpoints = [];
-    let currentBreakpoint = 'full';
     
     // DOM Elements
     const elements = {
-        container: '.preview-frame-container',
         controls: '.breakpoint-controls',
         settingsButton: '.breakpoint-settings',
         modal: '#breakpoint-settings-modal'
@@ -59,15 +57,10 @@ const ClientBlocksBreakpoints = (function($) {
             const $button = $(`
                 <button type="button" class="breakpoint-button" 
                         data-breakpoint="${breakpoint.id}" 
-                        title="${breakpoint.name} ${breakpoint.width ? `(${breakpoint.width}px)` : ''}">
+                        title="${breakpoint.name} (${breakpoint.width}px)">
                     <ion-icon name="${breakpoint.icon}"></ion-icon>
-                    <span>${breakpoint.id.toUpperCase()}</span>
                 </button>
             `);
-            
-            if (breakpoint.id === currentBreakpoint) {
-                $button.addClass('active');
-            }
             
             $controls.append($button);
         });
@@ -80,30 +73,38 @@ const ClientBlocksBreakpoints = (function($) {
         `);
     };
     
+    const renderBreakpointsList = () => {
+        const $list = $('.breakpoints-list');
+        $list.empty();
+        
+        breakpoints.forEach((breakpoint, index) => {
+            $list.append(`
+                <div class="breakpoint-item">
+                    <input type="text" name="name" value="${breakpoint.name}" placeholder="Name">
+                    <input type="number" name="width" value="${breakpoint.width || ''}" placeholder="Width">
+                    <select name="icon">
+                        ${getIconOptions(breakpoint.icon)}
+                    </select>
+                    <button type="button" class="remove-breakpoint" data-index="${index}">Remove</button>
+                </div>
+            `);
+        });
+    };
+    
+    const getIconOptions = (selectedIcon) => {
+        const icons = ['phone-portrait-outline', 'phone-landscape-outline', 'tablet-landscape-outline', 'laptop-outline', 'desktop-outline', 'expand-outline'];
+        return icons.map(icon => `<option value="${icon}" ${icon === selectedIcon ? 'selected' : ''}>${icon}</option>`).join('');
+    };
+    
     // Event Handlers
-    const handleBreakpointClick = function(e) {
-        e.preventDefault();
-        const $button = $(this);
-        const breakpoint = $button.data('breakpoint');
-        
-        if (currentBreakpoint === breakpoint) return;
-        
-        $('.breakpoint-button').removeClass('active');
-        $button.addClass('active');
-        
-        $(elements.container).attr('data-breakpoint', breakpoint);
-        currentBreakpoint = breakpoint;
-    };
-    
-    const handleSettingsClick = function(e) {
-        e.preventDefault();
-        openBreakpointSettings();
-    };
-    
     const openBreakpointSettings = () => {
         const $modal = $(elements.modal);
         if (!$modal.length) {
             createSettingsModal();
+            console.log('Modal created successfully');
+        } else {
+            renderBreakpointsList();
+            console.log('Modal already exists, updated content');
         }
         $(elements.modal).show();
     };
@@ -131,16 +132,57 @@ const ClientBlocksBreakpoints = (function($) {
         attachModalEvents();
     };
     
+    const attachModalEvents = () => {
+        $(document).on('click', '.close-modal', closeModal);
+        $(document).on('click', '.add-breakpoint', addBreakpoint);
+        $(document).on('click', '.remove-breakpoint', removeBreakpoint);
+        $(document).on('click', '.save-breakpoints', saveBreakpoints);
+    };
+    
+    const closeModal = () => {
+        $(elements.modal).hide();
+    };
+    
+    const addBreakpoint = () => {
+        breakpoints.push({
+            id: `breakpoint_${Date.now()}`,
+            name: 'New Breakpoint',
+            width: '',
+            icon: 'expand-outline'
+        });
+        renderBreakpointsList();
+    };
+    
+    const removeBreakpoint = function() {
+        const index = $(this).data('index');
+        breakpoints.splice(index, 1);
+        renderBreakpointsList();
+    };
+    
+    const saveBreakpoints = () => {
+        const updatedBreakpoints = [];
+        $('.breakpoint-item').each(function() {
+            const $item = $(this);
+            updatedBreakpoints.push({
+                id: $item.find('[name="name"]').val().toLowerCase().replace(/\s+/g, '_'),
+                name: $item.find('[name="name"]').val(),
+                width: parseInt($item.find('[name="width"]').val()) || null,
+                icon: $item.find('[name="icon"]').val()
+            });
+        });
+        
+        api.saveBreakpoints(updatedBreakpoints);
+        closeModal();
+    };
+    
     // Initialize
     const init = () => {
         api.loadBreakpoints();
-        
-        $(document).on('click', '.breakpoint-button', handleBreakpointClick);
-        $(document).on('click', '.breakpoint-settings', handleSettingsClick);
     };
     
     return {
-        init: init
+        init: init,
+        openBreakpointSettings: openBreakpointSettings
     };
     
 })(jQuery);

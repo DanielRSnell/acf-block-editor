@@ -17,21 +17,15 @@ class BreakpointManager {
         $this->upload_dir = wp_upload_dir();
         $this->breakpoints_file = $this->upload_dir['basedir'] . '/client-blocks/data/breakpoints.json';
         
-        // Create directory if it doesn't exist
         if (!file_exists(dirname($this->breakpoints_file))) {
             wp_mkdir_p(dirname($this->breakpoints_file));
-        }
-        
-        // Create default breakpoints if file doesn't exist
-        if (!file_exists($this->breakpoints_file)) {
-            $this->save_default_breakpoints();
         }
         
         add_action('rest_api_init', [$this, 'register_rest_routes']);
     }
     
-    private function save_default_breakpoints() {
-        $default_breakpoints = [
+    private function get_default_breakpoints() {
+        return [
             [
                 'id' => 'xs',
                 'name' => 'Mobile',
@@ -63,17 +57,25 @@ class BreakpointManager {
                 'icon' => 'expand-outline'
             ]
         ];
-        
+    }
+    
+    private function save_default_breakpoints() {
+        $default_breakpoints = $this->get_default_breakpoints();
         file_put_contents($this->breakpoints_file, json_encode($default_breakpoints, JSON_PRETTY_PRINT));
+        return $default_breakpoints;
     }
     
     public function get_breakpoints() {
-        if (!file_exists($this->breakpoints_file)) {
-            $this->save_default_breakpoints();
+        if (!file_exists($this->breakpoints_file) || filesize($this->breakpoints_file) == 0) {
+            return $this->save_default_breakpoints();
         }
         
         $breakpoints = json_decode(file_get_contents($this->breakpoints_file), true);
-        return $breakpoints ?: [];
+        if (empty($breakpoints) || !is_array($breakpoints)) {
+            return $this->save_default_breakpoints();
+        }
+        
+        return $breakpoints;
     }
     
     public function save_breakpoints($breakpoints) {

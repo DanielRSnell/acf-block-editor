@@ -44,45 +44,27 @@
 }
 
 /* Preview Container */
+.editor-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .preview-container {
-  height: calc(100% - 40px);
-  position: relative;
-  overflow: auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  overflow: hidden;
+  background: var(--bg-surface);
 }
 
 .preview-frame-container {
-  margin: var(--spacing-md);
-  background: white;
-  border-radius: var(--radius-2);
-  box-shadow: var(--shadow-2);
-  transition: all var(--animation-fade);
+  transition: transform 0.3s ease;
 }
 
-/* Breakpoint Sizes */
-.preview-frame-container[data-breakpoint="xs"] {
-  max-width: 375px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.preview-frame-container[data-breakpoint="sm"] {
-  max-width: 640px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.preview-frame-container[data-breakpoint="md"] {
-  max-width: 768px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.preview-frame-container[data-breakpoint="lg"] {
-  max-width: 1024px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.preview-frame-container[data-breakpoint="full"] {
-  max-width: none;
+#preview-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
 }
