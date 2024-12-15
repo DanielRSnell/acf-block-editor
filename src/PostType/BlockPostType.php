@@ -15,6 +15,7 @@ class BlockPostType {
         add_action('init', [$this, 'register']);
         add_action('add_meta_boxes', [$this, 'add_support_meta_box']);
         add_action('save_post_client_blocks', [$this, 'save_support_options']);
+        add_filter('single_template', [$this, 'set_single_template']);
     }
     
     public function register() {
@@ -107,6 +108,16 @@ class BlockPostType {
                 isset($_POST[$option]) ? '1' : '0'
             );
         }
+    }
+    
+    public function set_single_template($single_template) {
+        global $post;
+
+        if ($post->post_type === 'client_blocks') {
+            $single_template = CLIENT_BLOCKS_PATH . 'views/single-client_blocks.php';
+        }
+
+        return $single_template;
     }
     
     private function get_labels() {

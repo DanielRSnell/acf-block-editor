@@ -72,7 +72,7 @@
                 <div class="editor-preview">
                     <div class="preview-container" style="width: 100%; height: 100%;">
                         <div class="preview-frame-container" data-breakpoint="xl">
-                            <iframe id="preview-frame" src="<?php echo esc_url(home_url("client-blocks/preview/{$block->ID}")); ?>" style="max-width: 100%; width: 100%; height: 100%;"></iframe>
+                            <iframe id="preview-frame" src="<?php echo esc_url(get_permalink($block->ID)); ?>" style="max-width: 100%; width: 100%; height: 100%;"></iframe>
                         </div>
                     </div>
                 </div>

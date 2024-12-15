@@ -54,6 +54,13 @@ const ClientBlocksEditor = (function($) {
         tabs: '.tab-button'
     };
     
+    // Utility function to unescape HTML entities
+    const unescapeHTML = (escapedString) => {
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = escapedString;
+        return textarea.value;
+    };
+    
     // API Methods
     const api = {
         loadBlock: async () => {
@@ -62,6 +69,10 @@ const ClientBlocksEditor = (function($) {
                     url: `${clientBlocksEditor.restUrl}/blocks/${clientBlocksEditor.blockId}`,
                     headers: { 'X-WP-Nonce': clientBlocksEditor.nonce }
                 });
+                
+                for (const field in response.fields) {
+                    response.fields[field] = unescapeHTML(response.fields[field]);
+                }
                 
                 blockData = response;
                 updateEditor();
@@ -78,17 +89,31 @@ const ClientBlocksEditor = (function($) {
             try {
                 $saveButton.prop('disabled', true).text('Saving...');
                 
-                await $.ajax({
+                const dataToSave = {
+                    [`client_${currentTab}`]: editor.getValue()
+                };
+                
+                console.log('Saving data:', dataToSave);
+                console.log('Data length:', JSON.stringify(dataToSave).length);
+                
+                const response = await $.ajax({
                     url: `${clientBlocksEditor.restUrl}/blocks/${clientBlocksEditor.blockId}`,
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-WP-Nonce': clientBlocksEditor.nonce
                     },
-                    data: JSON.stringify({
-                        [`client_${currentTab}`]: editor.getValue()
-                    })
+                    data: JSON.stringify(dataToSave)
                 });
+                
+                console.log('Save response:', response);
+                
+                if (response.fields[`client_${currentTab}`] !== dataToSave[`client_${currentTab}`]) {
+                    console.error('Saved data does not match sent data');
+                    console.log('Sent:', dataToSave[`client_${currentTab}`]);
+                    console.log('Received:', response.fields[`client_${currentTab}`]);
+                    throw new Error('Data mismatch');
+                }
                 
                 $saveButton.text('Saved!');
                 setTimeout(() => {
