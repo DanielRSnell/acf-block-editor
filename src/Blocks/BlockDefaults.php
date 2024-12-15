@@ -5,32 +5,45 @@ class BlockDefaults {
     public static function get_default_php() {
         return <<<'PHP'
 <?php
-// Example data
-$example_title = get_field('example_title') ?: 'Example Title Not Registered Yet';
-$content = get_field('content') ?: 'This is an example block with some default content.';
-$items = get_field('items') ?: ['Item 1', 'Item 2', 'Item 3'];
+// Query for the latest 3 posts
+$recent_posts = get_posts([
+    'numberposts' => 3,
+    'post_status' => 'publish'
+]);
 
-// Return context for the template
-return [
-    'example_title' => $example_title,
-    'content' => $content,
-    'items' => $items
-];
+// Add data to the context
+$context['greeting'] = 'Hello from the block!';
+$context['recent_posts'] = array_map(function($post) {
+    return [
+        'title' => $post->post_title,
+        'url' => get_permalink($post->ID),
+        'excerpt' => get_the_excerpt($post)
+    ];
+}, $recent_posts);
+
+// Return the modified context
+return $context;
 PHP;
     }
     
     public static function get_default_template() {
         return <<<'TWIG'
 <div class="example-block">
-    <h2 class="block-title">{{ example_title }}</h2>
+    <h2 class="block-title">{{ fields.example_title }}</h2>
+    <p>{{ greeting }}</p>
     <div class="block-content">
-        <p>{{ content }}</p>
-        {% if items %}
-            <ul class="block-items">
-                {% for item in items %}
-                    <li class="block-item">{{ item }}</li>
+        <h3>Recent Posts:</h3>
+        {% if recent_posts %}
+            <ul class="recent-posts">
+                {% for post in recent_posts %}
+                    <li>
+                        <a href="{{ post.url }}">{{ post.title }}</a>
+                        <p>{{ post.excerpt }}</p>
+                    </li>
                 {% endfor %}
             </ul>
+        {% else %}
+            <p>No recent posts found.</p>
         {% endif %}
         {% if block.inner_blocks %}
             <div class="block-inner-content">
@@ -61,17 +74,24 @@ TWIG;
     color: #666666;
 }
 
-.block-items {
+.recent-posts {
     list-style: none;
     padding: 0;
     margin: 1rem 0;
 }
 
-.block-item {
-    padding: 0.75rem 1rem;
-    background: #f5f5f5;
-    margin-bottom: 0.5rem;
-    border-radius: 4px;
+.recent-posts li {
+    margin-bottom: 1rem;
+}
+
+.recent-posts a {
+    font-weight: bold;
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.recent-posts a:hover {
+    text-decoration: underline;
 }
 
 .block-inner-content {
@@ -89,10 +109,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const block = document.getElementById('{{ block.id }}');
     if (!block) return;
     
-    const items = block.querySelectorAll('.block-item');
-    items.forEach(item => {
-        item.addEventListener('click', function() {
-            this.style.background = '#e0e0e0';
+    const links = block.querySelectorAll('.recent-posts a');
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('You clicked: ' + this.textContent);
         });
     });
 });

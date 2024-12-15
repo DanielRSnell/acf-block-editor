@@ -21,12 +21,11 @@ class RestController
 
     public function register_routes()
     {
-        // Block endpoints
         register_rest_route($this->namespace, '/blocks', [
             [
                 'methods' => 'GET',
                 'callback' => [BlockEndpoints::class, 'get_blocks'],
-                'permission_callback' => '__return_true', // Make GET public
+                'permission_callback' => '__return_true',
             ],
         ]);
 
@@ -34,7 +33,7 @@ class RestController
             [
                 'methods' => 'GET',
                 'callback' => [BlockEndpoints::class, 'get_block'],
-                'permission_callback' => '__return_true', // Make GET public
+                'permission_callback' => '__return_true',
             ],
             [
                 'methods' => 'POST',
@@ -44,12 +43,20 @@ class RestController
             ],
         ]);
 
-        // Category endpoints
         register_rest_route($this->namespace, '/categories', [
             [
                 'methods' => 'GET',
                 'callback' => [CategoryEndpoints::class, 'get_categories'],
-                'permission_callback' => '__return_true', // Make GET public
+                'permission_callback' => '__return_true',
+            ],
+        ]);
+
+        register_rest_route($this->namespace, '/preview', [
+            [
+                'methods' => 'POST',
+                'callback' => [PreviewEndpoint::class, 'render_preview'],
+                'permission_callback' => [$this, 'check_permission'],
+                'args' => $this->get_preview_args(),
             ],
         ]);
     }
@@ -65,22 +72,40 @@ class RestController
             'client_php' => [
                 'type' => 'string',
                 'required' => false,
-                // 'sanitize_callback' => 'wp_kses_post',
             ],
             'client_template' => [
                 'type' => 'string',
                 'required' => false,
-                // 'sanitize_callback' => 'wp_kses_post',
             ],
             'client_js' => [
                 'type' => 'string',
                 'required' => false,
-                // 'sanitize_callback' => 'wp_kses_post',
             ],
             'client_css' => [
                 'type' => 'string',
                 'required' => false,
-                // 'sanitize_callback' => 'wp_kses_post',
+            ],
+        ];
+    }
+
+    private function get_preview_args()
+    {
+        return [
+            'block_id' => [
+                'type' => 'integer',
+                'required' => true,
+            ],
+            'post_context' => [
+                'type' => 'string',
+                'required' => true,
+            ],
+            'mock_fields' => [
+                'type' => 'string',
+                'required' => true,
+            ],
+            'block_context' => [
+                'type' => 'string',
+                'required' => true,
             ],
         ];
     }

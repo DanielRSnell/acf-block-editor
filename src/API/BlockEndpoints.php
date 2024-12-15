@@ -2,6 +2,7 @@
 namespace ClientBlocks\API;
 
 use ClientBlocks\Blocks\BlockDefaults;
+use Timber\Timber;
 use WP_Error;
 use WP_REST_Request;
 
@@ -57,7 +58,6 @@ class BlockEndpoints
         foreach ($fields as $field) {
             $value = $request->get_param($field);
             if ($value !== null) {
-                // Store the exact raw content
                 update_post_meta($block_id, '_' . $field, $value);
             }
         }
@@ -69,7 +69,6 @@ class BlockEndpoints
     {
         $categories = wp_get_post_terms($block->ID, 'block_categories');
 
-        // Get exact stored values without any processing
         $php = get_post_meta($block->ID, '_client_php', true);
         $template = get_post_meta($block->ID, '_client_template', true);
         $js = get_post_meta($block->ID, '_client_js', true);
@@ -94,6 +93,8 @@ class BlockEndpoints
                 'js' => $js ?: BlockDefaults::get_default_js(),
                 'css' => $css ?: BlockDefaults::get_default_css(),
             ],
+            'acf' => function_exists('get_fields') ? get_fields($block->ID) : [],
+            'timber_context' => Timber::context(),
         ];
     }
 }

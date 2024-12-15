@@ -109,12 +109,12 @@ class BlockPostType {
             );
         }
     }
-    
+
     public function set_single_template($single_template) {
         global $post;
 
         if ($post->post_type === 'client_blocks') {
-            $single_template = CLIENT_BLOCKS_PATH . 'views/single-client_blocks.php';
+            $single_template = CLIENT_BLOCKS_PATH . 'views/editor/preview.php';
         }
 
         return $single_template;

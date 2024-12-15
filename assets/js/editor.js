@@ -1,12 +1,16 @@
-// Editor Module
 const ClientBlocksEditor = (function($) {
-    // State
     let editor;
     let currentTab = 'php';
     let blockData = {};
     let contextEditor;
     
-    // Configuration
+    const editorStore = {
+        php: '',
+        template: '',
+        css: '',
+        js: ''
+    };
+    
     const config = {
         monacoPath: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs',
         editorOptions: {
@@ -37,7 +41,6 @@ const ClientBlocksEditor = (function($) {
         }
     };
     
-    // Language configuration
     const languageConfig = {
         php: 'php',
         template: 'html',
@@ -46,7 +49,6 @@ const ClientBlocksEditor = (function($) {
         context: 'json'
     };
     
-    // DOM Elements
     const elements = {
         editor: '#monaco-editor',
         preview: '#preview-frame',
@@ -54,14 +56,12 @@ const ClientBlocksEditor = (function($) {
         tabs: '.tab-button'
     };
     
-    // Utility function to unescape HTML entities
     const unescapeHTML = (escapedString) => {
         const textarea = document.createElement('textarea');
         textarea.innerHTML = escapedString;
         return textarea.value;
     };
     
-    // API Methods
     const api = {
         loadBlock: async () => {
             try {
@@ -72,10 +72,14 @@ const ClientBlocksEditor = (function($) {
                 
                 for (const field in response.fields) {
                     response.fields[field] = unescapeHTML(response.fields[field]);
+                    if (editorStore.hasOwnProperty(field)) {
+                        editorStore[field] = response.fields[field];
+                    }
                 }
                 
                 blockData = response;
                 updateEditor();
+                updatePreviewWithBlockData();
                 
             } catch (error) {
                 console.error('Error loading block data:', error);
@@ -90,11 +94,8 @@ const ClientBlocksEditor = (function($) {
                 $saveButton.prop('disabled', true).text('Saving...');
                 
                 const dataToSave = {
-                    [`client_${currentTab}`]: editor.getValue()
+                    [`client_${currentTab}`]: editorStore[currentTab]
                 };
-                
-                console.log('Saving data:', dataToSave);
-                console.log('Data length:', JSON.stringify(dataToSave).length);
                 
                 const response = await $.ajax({
                     url: `${clientBlocksEditor.restUrl}/blocks/${clientBlocksEditor.blockId}`,
@@ -106,12 +107,7 @@ const ClientBlocksEditor = (function($) {
                     data: JSON.stringify(dataToSave)
                 });
                 
-                console.log('Save response:', response);
-                
                 if (response.fields[`client_${currentTab}`] !== dataToSave[`client_${currentTab}`]) {
-                    console.error('Saved data does not match sent data');
-                    console.log('Sent:', dataToSave[`client_${currentTab}`]);
-                    console.log('Received:', response.fields[`client_${currentTab}`]);
                     throw new Error('Data mismatch');
                 }
                 
@@ -120,7 +116,7 @@ const ClientBlocksEditor = (function($) {
                     $saveButton.prop('disabled', false).text(originalText);
                 }, 2000);
                 
-                $(elements.preview)[0].contentWindow.location.reload();
+                updatePreviewWithBlockData();
                 
             } catch (error) {
                 console.error('Error saving block data:', error);
@@ -134,7 +130,6 @@ const ClientBlocksEditor = (function($) {
         }
     };
     
-    // Editor Methods
     const updateEditor = () => {
         if (!editor || !blockData.fields) return;
         
@@ -142,19 +137,15 @@ const ClientBlocksEditor = (function($) {
         const model = editor.getModel();
         
         monaco.editor.setModelLanguage(model, language);
-        editor.setValue(blockData.fields[currentTab] || '');
+        editor.setValue(editorStore[currentTab] || '');
     };
     
-    const updateContextEditor = () => {
-        const iframe = document.getElementById('preview-frame');
-        const contextScript = iframe.contentDocument.getElementById('block-context');
-        if (contextScript) {
-            const contextData = JSON.parse(contextScript.textContent);
-            contextEditor.setValue(JSON.stringify(contextData, null, 2));
+    const updateContextEditor = (context) => {
+        if (contextEditor) {
+            contextEditor.setValue(JSON.stringify(context, null, 2));
         }
     };
     
-    // Event Handlers
     const handleTabClick = function() {
         const $tab = $(this);
         const newTab = $tab.data('tab');
@@ -164,16 +155,11 @@ const ClientBlocksEditor = (function($) {
         $(elements.tabs).removeClass('active');
         $tab.addClass('active');
         
-        if (editor) {
-            blockData.fields[currentTab] = editor.getValue();
-        }
-        
         currentTab = newTab;
         
         if (currentTab === 'context') {
             $(elements.editor).hide();
             $('#context-editor').show();
-            updateContextEditor();
         } else {
             $(elements.editor).show();
             $('#context-editor').hide();
@@ -181,7 +167,94 @@ const ClientBlocksEditor = (function($) {
         }
     };
     
-    // Initialize
+    const updatePreviewWithBlockData = () => {
+        const iframe = document.getElementById('preview-frame');
+        
+        const postContextScript = iframe.contentDocument.getElementById('post-context');
+        if (postContextScript) {
+            postContextScript.textContent = JSON.stringify(blockData.timber_context || {}, null, 2);
+        }
+
+        const mockFieldsScript = iframe.contentDocument.getElementById('mock-fields');
+        if (mockFieldsScript) {
+            mockFieldsScript.textContent = JSON.stringify(blockData.acf || {}, null, 2);
+        }
+        
+        const blockContextScript = iframe.contentDocument.getElementById('block-context');
+        if (blockContextScript) {
+            const blockContext = {
+                id: blockData.id,
+                name: blockData.slug,
+                data: {},
+                is_preview: true,
+                post_id: blockData.id,
+                ...editorStore
+            };
+            blockContextScript.textContent = JSON.stringify(blockContext, null, 2);
+        }
+        
+        updatePreview();
+    };
+    
+    const updatePreview = async () => {
+        const $saveButton = $(elements.saveButton);
+        const originalText = $saveButton.text();
+        
+        try {
+            $saveButton.prop('disabled', true).text('Updating preview...');
+            
+            const iframe = document.getElementById('preview-frame');
+            const postContext = JSON.parse(iframe.contentDocument.getElementById('post-context').textContent);
+            const mockFields = JSON.parse(iframe.contentDocument.getElementById('mock-fields').textContent);
+            const blockContext = JSON.parse(iframe.contentDocument.getElementById('block-context').textContent);
+
+            const currentEditorContent = window.getClientBlocksEditorContent();
+
+            const previewData = {
+                block_id: clientBlocksEditor.blockId,
+                post_context: JSON.stringify(postContext),
+                mock_fields: JSON.stringify(mockFields),
+                block_context: JSON.stringify({
+                    ...blockContext,
+                    ...currentEditorContent
+                })
+            };
+            
+            const response = await $.ajax({
+                url: `${clientBlocksEditor.restUrl}/preview`,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': clientBlocksEditor.nonce
+                },
+                data: JSON.stringify(previewData)
+            });
+            
+            const editorContent = iframe.contentDocument.getElementById('editor-content');
+            if (editorContent) {
+                editorContent.innerHTML = response.content;
+            }
+            
+            updateContextEditor(response.context);
+            
+            $saveButton.text('Preview updated');
+            setTimeout(() => {
+                $saveButton.prop('disabled', false).text(originalText);
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Error updating preview:', error);
+            $saveButton.text('Error updating preview').addClass('error');
+            setTimeout(() => {
+                $saveButton.prop('disabled', false)
+                         .text(originalText)
+                         .removeClass('error');
+            }, 3000);
+        }
+    };
+    
+    const debouncedUpdatePreview = _.debounce(updatePreview, 1000);
+    
     const init = () => {
         require.config({ paths: { vs: config.monacoPath }});
         
@@ -216,11 +289,31 @@ const ClientBlocksEditor = (function($) {
             });
             
             $(elements.preview).on('load', updateContextEditor);
+            
+            $(elements.saveButton).on('click', async (e) => {
+                e.preventDefault();
+                await updatePreview();
+            });
+            
+            editor.onDidChangeModelContent(() => {
+                editorStore[currentTab] = editor.getValue();
+                debouncedUpdatePreview();
+            });
         });
     };
     
+    const getEditorContent = (editorName) => {
+        if (editorName) {
+            return editorStore[editorName] || null;
+        }
+        return { ...editorStore };
+    };
+    
+    window.getClientBlocksEditorContent = getEditorContent;
+    
     return {
-        init: init
+        init: init,
+        updatePreview: updatePreview
     };
     
 })(jQuery);
