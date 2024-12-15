@@ -1,19 +1,22 @@
 <?php
 namespace ClientBlocks\Blocks;
 
-class BlockPreview {
-    public static function render($content, $block) {
+class BlockPreview
+{
+    public static function render($content, $block)
+    {
         $preview_styles = self::get_preview_styles();
         $preview_bar = self::get_preview_bar($block);
-        
+
         echo $preview_styles;
         echo $preview_bar;
         echo '<div class="client-blocks-preview-content">';
         echo $content;
         echo '</div>';
     }
-    
-    private static function get_preview_styles() {
+
+    private static function get_preview_styles()
+    {
         return '
             <style>
                 .client-blocks-preview-bar {
@@ -40,11 +43,29 @@ class BlockPreview {
                     border-radius: 0 0 4px 4px;
                     padding: 1px;
                 }
+                .open-editor-button {
+                    background: #007cba;
+                    border: none;
+                    color: #fff;
+                    padding: 4px 8px;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    font-size: 12px;
+                }
+                .open-editor-button:hover {
+                    background: #0071a1;
+                }
             </style>
         ';
     }
-    
-    private static function get_preview_bar($block) {
+
+    private static function get_preview_bar($block)
+    {
+        $open_editor_button = sprintf(
+            '<button class="open-editor-button" onclick="openClientBlocksEditor(%d)">Open in Editor</button>',
+            esc_attr($block['template_id'])
+        );
+
         return sprintf(
             '<div class="client-blocks-preview-bar">
                 <div>
@@ -52,11 +73,15 @@ class BlockPreview {
                     <span>Post ID: <code>%s</code></span>
                     <span>Type: <code>%s</code></span>
                 </div>
-                <div>Preview Mode</div>
+                <div>
+                    %s
+                    <span>Preview Mode</span>
+                </div>
             </div>',
             esc_html($block['id']),
             esc_html($block['post_id']),
-            esc_html($block['name'])
+            esc_html($block['name']),
+            $open_editor_button,
         );
     }
 }
