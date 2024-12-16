@@ -44,6 +44,11 @@ class EditorPage {
             'breakpoints' => BreakpointManager::instance()->get_breakpoints(),
             'monacoPath' => 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs'
         ]);
+
+        // Add ACF form support
+        if (function_exists('acf_form_head')) {
+            acf_form_head();
+        }
     }
     
     public function add_editor_link($actions, $post) {

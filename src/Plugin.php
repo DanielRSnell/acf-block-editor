@@ -5,6 +5,7 @@ use ClientBlocks\Blocks\Registry\BlockRegistrar;
 use ClientBlocks\Blocks\Registry\CategoryRegistrar;
 use ClientBlocks\Admin\Editor\EditorPage;
 use ClientBlocks\Admin\Editor\BreakpointManager;
+use ClientBlocks\Admin\Editor\GlobalCSSManager;
 
 class Plugin {
     private static $instance = null;
@@ -39,5 +40,6 @@ class Plugin {
         EditorPage::instance();
         
         BreakpointManager::instance();
+        GlobalCSSManager::instance();
     }
 }

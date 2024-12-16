@@ -43,24 +43,28 @@
         <div class="editor-container">
             <div class="editor-sidebar">
                 <div class="editor-tabs">
-                    <button type="button" class="tab-button active" data-tab="php" title="PHP Logic">
+                    <button type="button" class="tab-button active" data-tab="php" data-title="PHP Logic">
                         <ion-icon name="code-slash-outline"></ion-icon>
                     </button>
-                    <button type="button" class="tab-button" data-tab="template" title="HTML Template">
+                    <button type="button" class="tab-button" data-tab="template" data-title="HTML Template">
                         <ion-icon name="document-text-outline"></ion-icon>
                     </button>
-                    <button type="button" class="tab-button" data-tab="css" title="CSS Styles">
+                    <button type="button" class="tab-button" data-tab="css" data-title="CSS Styles">
                         <ion-icon name="brush-outline"></ion-icon>
                     </button>
-                    <button type="button" class="tab-button" data-tab="js" title="JavaScript">
+                    <button type="button" class="tab-button" data-tab="global-css" data-title="Global CSS">
+                        <ion-icon name="globe-outline"></ion-icon>
+                    </button>
+                    <button type="button" class="tab-button" data-tab="js" data-title="JavaScript">
                         <ion-icon name="logo-javascript"></ion-icon>
                     </button>
-                    <button type="button" class="tab-button" data-tab="context" title="Block Context">
+                    <button type="button" class="tab-button" data-tab="context" data-title="Block Context">
                         <ion-icon name="eye-outline"></ion-icon>
                     </button>
-                </div>
-                <div class="editor-settings">
-                    <button type="button" class="settings-button" title="Block Settings">
+                    <button type="button" class="tab-button" data-tab="acf" data-title="ACF Fields">
+                        <ion-icon name="construct-outline"></ion-icon>
+                    </button>
+                    <button type="button" class="tab-button" data-tab="settings" data-title="Editor Settings">
                         <ion-icon name="settings-outline"></ion-icon>
                     </button>
                 </div>
@@ -68,12 +72,42 @@
 
             <div class="editor-main">
                 <div class="editor-pane">
-                    <div id="monaco-editor"></div>
+                    <div class="editor-top-bar">
+                        <div class="editor-top-bar-title">PHP Logic</div>
+                        <div class="editor-top-bar-actions">
+                            <button type="button" class="editor-action-button" title="Format Code">
+                                <ion-icon name="code-outline"></ion-icon>
+                            </button>
+                            <button type="button" class="editor-action-button" title="Copy Code">
+                                <ion-icon name="copy-outline"></ion-icon>
+                            </button>
+                            <button type="button" class="editor-action-button" title="Settings">
+                                <ion-icon name="settings-outline"></ion-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="editor-container-wrapper">
+                        <div id="monaco-editor"></div>
+                        <div id="context-editor"></div>
+                        <div id="acf-form-container">
+                            <?php 
+                            if (function_exists('acf_form')) {
+                                acf_form([
+                                    'post_id' => $block->ID,
+                                    'form' => true,
+                                    'return' => false,
+                                    'submit_value' => 'Update Fields'
+                                ]);
+                            }
+                            ?>
+                        </div>
+                        <div id="settings-container"></div>
+                    </div>
                 </div>
                 <div class="editor-preview">
-                    <div class="preview-container" style="width: 100%; height: 100%;">
+                    <div class="preview-container">
                         <div class="preview-frame-container" data-breakpoint="xl">
-                            <iframe id="preview-frame" src="<?php echo esc_url(get_permalink($block->ID)); ?>" style="max-width: 100%; width: 100%; height: 100%;"></iframe>
+                            <iframe id="preview-frame" src="<?php echo esc_url(get_permalink($block->ID)); ?>"></iframe>
                         </div>
                     </div>
                 </div>

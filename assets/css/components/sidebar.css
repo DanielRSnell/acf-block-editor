@@ -37,31 +37,6 @@
   background: var(--tab-hover);
 }
 
-.tab-button::after {
-  content: attr(title);
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--tooltip-bg);
-  color: var(--text-1);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-2);
-  font-size: var(--font-size-0);
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: all var(--animation-fade);
-  margin-left: var(--spacing-sm);
-  z-index: var(--layer-1);
-  box-shadow: var(--shadow-2);
-}
-
-.tab-button:hover::after {
-  opacity: 1;
-  visibility: visible;
-}
-
 .tab-button.active {
   color: var(--text-1);
   background: var(--bg-surface-2);
