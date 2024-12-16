@@ -3,9 +3,7 @@ namespace ClientBlocks;
 
 use ClientBlocks\Blocks\Registry\BlockRegistrar;
 use ClientBlocks\Blocks\Registry\CategoryRegistrar;
-use ClientBlocks\Blocks\Support\SupportMetaBox;
 use ClientBlocks\Admin\Editor\EditorPage;
-use ClientBlocks\Admin\Editor\EditorRoute;
 use ClientBlocks\Admin\Editor\BreakpointManager;
 
 class Plugin {
@@ -33,14 +31,11 @@ class Plugin {
         Admin\Menu::instance();
         Admin\Assets::instance();
         
-        SupportMetaBox::instance();
-        
         BlockRegistrar::instance();
         CategoryRegistrar::instance();
         
         API\RestController::instance();
         
-        EditorRoute::instance();
         EditorPage::instance();
         
         BreakpointManager::instance();
