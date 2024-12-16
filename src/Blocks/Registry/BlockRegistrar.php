@@ -48,6 +48,15 @@ class BlockRegistrar
                 BlockRenderer::render($block, $content, $is_preview, $post_id, $block_data, $block_name);
             },
             'supports' => BlockSupports::get_supports($block),
+            'example' => array(
+                'attributes' => array(
+                    'mode' => 'preview',
+                    'data' => array(
+                        'example' => true,
+                        'mock_fields' => get_fields($block->ID),
+                    ),
+                ),
+            ),
         ]);
     }
 
