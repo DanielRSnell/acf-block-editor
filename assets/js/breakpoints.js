@@ -70,10 +70,6 @@ const ClientBlocksBreakpoints = (function($) {
                 <ion-icon name="settings-outline"></ion-icon>
             </button>
         `);
-
-        $('[title]').tooltip({
-            position: { my: "center bottom", at: "center top-10" }
-        });
     };
     
     const renderBreakpointsList = () => {
@@ -109,18 +105,14 @@ const ClientBlocksBreakpoints = (function($) {
         return icons.map(icon => `<option value="${icon}" ${icon === selectedIcon ? 'selected' : ''}>${icon}</option>`).join('');
     };
     
-    const openBreakpointSettings = () => {
-        console.log('Opening breakpoint settings modal');
+    const openSettings = () => {
         const $modal = $(elements.modal);
         if (!$modal.length) {
-            console.log('Creating new modal');
             createSettingsModal();
         } else {
-            console.log('Updating existing modal');
             renderBreakpointsList();
         }
         $(elements.modal).show();
-        console.log('Modal should now be visible');
     };
     
     const createSettingsModal = () => {
@@ -191,15 +183,11 @@ const ClientBlocksBreakpoints = (function($) {
     
     const init = () => {
         api.loadBreakpoints();
-        $(document).on('click', elements.settingsButton, function(e) {
-            e.preventDefault();
-            console.log('Settings button clicked');
-            openBreakpointSettings();
-        });
     };
     
     return {
-        init: init
+        init,
+        openSettings
     };
     
 })(jQuery);

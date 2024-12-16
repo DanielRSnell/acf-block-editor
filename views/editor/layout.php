@@ -35,9 +35,6 @@
                     <ion-icon name="settings-outline"></ion-icon>
                 </button>
             </div>
-            <div class="editor-actions">
-                <button type="button" class="button button-primary" id="save-block">Save Changes</button>
-            </div>
         </div>
 
         <div class="editor-container">
@@ -75,14 +72,18 @@
                     <div class="editor-top-bar">
                         <div class="editor-top-bar-title">PHP Logic</div>
                         <div class="editor-top-bar-actions">
+                            <div class="editor-status">
+                                <div class="editor-status-indicator"></div>
+                                <span class="editor-status-text">Ready</span>
+                            </div>
                             <button type="button" class="editor-action-button" title="Format Code">
                                 <ion-icon name="code-outline"></ion-icon>
                             </button>
                             <button type="button" class="editor-action-button" title="Copy Code">
                                 <ion-icon name="copy-outline"></ion-icon>
                             </button>
-                            <button type="button" class="editor-action-button" title="Settings">
-                                <ion-icon name="settings-outline"></ion-icon>
+                            <button type="button" class="editor-action-button" id="save-block" title="Save Changes">
+                                <ion-icon name="save-outline"></ion-icon>
                             </button>
                         </div>
                     </div>
