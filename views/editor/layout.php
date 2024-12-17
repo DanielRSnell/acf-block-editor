@@ -3,7 +3,12 @@
 <head>
     <meta charset="<?php bloginfo('charset');?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo esc_html($block->post_title); ?> - Block Editor</title>
+    <?php
+    $block_id = isset($_GET['block_id']) ? intval($_GET['block_id']) : 0;
+    $block = get_post($block_id);
+    $block_title = $block ? esc_html($block->post_title) : 'Block Editor';
+    ?>
+    <title><?php echo $block_title; ?> - Block Editor</title>
     <?php wp_head();?>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -16,7 +21,7 @@
         <div class="editor-header">
             <div class="editor-logo">
                 <ion-icon name="cube-outline"></ion-icon>
-                <span><?php echo esc_html($block->post_title); ?></span>
+                <span><?php echo $block_title; ?></span>
             </div>
             <div class="breakpoint-controls">
                 <?php
@@ -94,7 +99,7 @@
                             <?php 
                             if (function_exists('acf_form')) {
                                 acf_form([
-                                    'post_id' => $block->ID,
+                                    'post_id' => $block_id,
                                     'form' => true,
                                     'return' => false,
                                     'submit_value' => 'Update Fields'
@@ -108,7 +113,7 @@
                 <div class="editor-preview">
                     <div class="preview-container">
                         <div class="preview-frame-container" data-breakpoint="xl">
-                            <iframe id="preview-frame" src="<?php echo esc_url(get_permalink($block->ID)); ?>"></iframe>
+                            <iframe id="preview-frame" src="<?php echo esc_url(get_permalink($block_id)); ?>"></iframe>
                         </div>
                     </div>
                 </div>

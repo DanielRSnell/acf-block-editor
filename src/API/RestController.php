@@ -1,6 +1,8 @@
 <?php
 namespace ClientBlocks\API;
 
+use WP_REST_Request;
+
 class RestController
 {
     private static $instance = null;
@@ -40,6 +42,15 @@ class RestController
                 'callback' => [BlockEndpoints::class, 'update_block'],
                 'permission_callback' => [$this, 'check_permission'],
                 'args' => $this->get_block_args(),
+            ],
+        ]);
+
+        register_rest_route($this->namespace, '/blocks/(?P<id>\d+)/global-save', [
+            [
+                'methods' => 'POST',
+                'callback' => [BlockEndpoints::class, 'global_save_block'],
+                'permission_callback' => [$this, 'check_permission'],
+                'args' => $this->get_global_save_args(),
             ],
         ]);
 
@@ -84,6 +95,32 @@ class RestController
             'client_css' => [
                 'type' => 'string',
                 'required' => false,
+            ],
+        ];
+    }
+
+    private function get_global_save_args()
+    {
+        return [
+            'php' => [
+                'type' => 'string',
+                'required' => true,
+            ],
+            'template' => [
+                'type' => 'string',
+                'required' => true,
+            ],
+            'css' => [
+                'type' => 'string',
+                'required' => true,
+            ],
+            'js' => [
+                'type' => 'string',
+                'required' => true,
+            ],
+            'global-css' => [
+                'type' => 'string',
+                'required' => true,
             ],
         ];
     }

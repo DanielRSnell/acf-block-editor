@@ -114,7 +114,11 @@ class BlockPostType {
         global $post;
 
         if ($post->post_type === 'client_blocks') {
-            $single_template = CLIENT_BLOCKS_PATH . 'views/editor/preview.php';
+            if (isset($_GET['artisan']) && $_GET['artisan'] === 'true' && isset($_GET['block_id'])) {
+                $single_template = CLIENT_BLOCKS_PATH . 'views/editor/layout.php';
+            } else {
+                $single_template = CLIENT_BLOCKS_PATH . 'views/editor/preview.php';
+            }
         }
 
         return $single_template;

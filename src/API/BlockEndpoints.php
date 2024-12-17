@@ -2,6 +2,7 @@
 namespace ClientBlocks\API;
 
 use ClientBlocks\Blocks\BlockDefaults;
+use ClientBlocks\Admin\Editor\GlobalCSSManager;
 use Timber\Timber;
 use WP_Error;
 use WP_REST_Request;
@@ -60,6 +61,41 @@ class BlockEndpoints
             if ($value !== null) {
                 update_post_meta($block_id, '_' . $field, $value);
             }
+        }
+
+        return self::get_block($request);
+    }
+
+    public static function global_save_block(WP_REST_Request $request)
+    {
+        $block_id = $request->get_param('id');
+        $block = get_post($block_id);
+
+        if (!$block || $block->post_type !== 'client_blocks') {
+            return new WP_Error(
+                'block_not_found',
+                'Block not found',
+                ['status' => 404]
+            );
+        }
+
+        $fields = [
+            'php' => '_client_php',
+            'template' => '_client_template',
+            'js' => '_client_js',
+            'css' => '_client_css',
+        ];
+
+        foreach ($fields as $key => $meta_key) {
+            $value = $request->get_param($key);
+            if ($value !== null) {
+                update_post_meta($block_id, $meta_key, $value);
+            }
+        }
+
+        $global_css = $request->get_param('global-css');
+        if ($global_css !== null) {
+            GlobalCSSManager::instance()->save_css($global_css);
         }
 
         return self::get_block($request);

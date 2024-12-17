@@ -6,7 +6,7 @@ window.ClientBlocksPreview = (function($) {
 
     async updatePreview(editorStore, blockData, lastPreviewContent, setStatus) {
       try {
-        setStatus('warning', 'Updating preview...');
+        // setStatus('warning', 'Updating preview...');
         
         const iframe = document.getElementById('preview-frame');
         if (!iframe || !iframe.contentDocument) {
@@ -42,7 +42,7 @@ window.ClientBlocksPreview = (function($) {
           editorContent.innerHTML = response.content;
         }
         
-        setStatus('success', 'Preview updated');
+        // setStatus('success', 'Preview updated');
         return response.context;
       } catch (error) {
         console.error('Error updating preview:', error);

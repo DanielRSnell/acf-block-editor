@@ -183,6 +183,7 @@ const ClientBlocksBreakpoints = (function($) {
     
     const init = () => {
         api.loadBreakpoints();
+        $(document).on('click', elements.settingsButton, openSettings);
     };
     
     return {
