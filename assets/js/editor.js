@@ -1,4 +1,22 @@
 const ClientBlocksEditor = (function($) {
+    console.log('Initializing ClientBlocksEditor');
+
+    window.variables = [
+        '--primary-color', '--secondary-color', '--text-color', '--background-color',
+        '--font-size-small', '--font-size-medium', '--font-size-large',
+        '--spacing-small', '--spacing-medium', '--spacing-large',
+        '--border-radius', '--box-shadow', '--transition-speed'
+    ];
+
+    window.classes = [
+        'container', 'row', 'col', 'btn', 'btn-primary', 'btn-secondary',
+        'card', 'card-body', 'form-group', 'form-control', 'nav', 'nav-item',
+        'table', 'table-striped', 'alert', 'alert-success', 'alert-danger'
+    ];
+
+    console.log('Global variables defined:', window.variables);
+    console.log('Global classes defined:', window.classes);
+
     let editor;
     let currentTab = 'php';
     let blockData = {};
@@ -28,7 +46,17 @@ const ClientBlocksEditor = (function($) {
             formatOnPaste: true,
             formatOnType: true,
             wrappingIndent: 'indent',
-            backgroundColor: '#1e1e1e'
+            quickSuggestions: true,
+            suggestOnTriggerCharacters: true,
+            acceptSuggestionOnCommitCharacter: true,
+            wordBasedSuggestions: true,
+            suggestSelection: 'recentlyUsed',
+            suggest: {
+                filterGraceful: true,
+                showIcons: true,
+                maxVisibleSuggestions: 12,
+                selectionMode: 'never'
+            }
         },
         context: {
             value: '',
@@ -44,6 +72,153 @@ const ClientBlocksEditor = (function($) {
             backgroundColor: '#1e1e1e'
         }
     };
+
+    const configureCssCompletion = (monaco) => {
+        monaco.languages.registerCompletionItemProvider('css', {
+            triggerCharacters: ['"', "'", ' '],
+            provideCompletionItems: (model, position) => {
+                const textUntilPosition = model.getValueInRange({
+                    startLineNumber: 1,
+                    startColumn: 1,
+                    endLineNumber: position.lineNumber,
+                    endColumn: position.column
+                });
+
+                // const match = textUntilPosition.match(/class\s*=\s*["'][^"']*$/);
+                // if (!match) {
+                //     return { suggestions: [] };
+                // }
+
+                const word = model.getWordUntilPosition(position);
+                const range = {
+                    startLineNumber: position.lineNumber,
+                    endLineNumber: position.lineNumber,
+                    startColumn: word.startColumn,
+                    endColumn: word.endColumn
+                };
+
+                return {
+                    suggestions: window.variables.map(variable => ({
+                        label: variable,
+                        kind: monaco.languages.CompletionItemKind.Value,
+                        insertText: variable,
+                        range: range,
+                        filterText: variable,
+                        sortText: variable
+                    }))
+                };
+            }
+        });
+                console.log('✅ CSS completion provider configured');
+
+    };
+
+    const configureHtmlCompletion = (monaco) => {
+        monaco.languages.registerCompletionItemProvider('html', {
+            triggerCharacters: ['"', "'", ' ', '-'],
+            provideCompletionItems: (model, position) => {
+                console.log('🎯 Completion provider triggered at position:', position);
+
+                const textUntilPosition = model.getValueInRange({
+                    startLineNumber: 1,
+                    startColumn: 1,
+                    endLineNumber: position.lineNumber,
+                    endColumn: position.column
+                });
+                console.log('📝 Text until position:', textUntilPosition);
+
+                // Check for class attribute context
+                const classMatch = textUntilPosition.match(/class\s*=\s*["']([^"']*)$/);
+                console.log('🎨 Class attribute match:', classMatch);
+                
+                // Simplified hyphen detection
+                const withinVarPattern = /var\(\s*-$/;
+                const singleHyphenPattern = /-$/;
+                
+                const isWithinVar = withinVarPattern.test(textUntilPosition);
+                const hasSingleHyphen = singleHyphenPattern.test(textUntilPosition);
+                
+                console.log('🔍 Hyphen context:', { 
+                    isWithinVar,
+                    hasSingleHyphen,
+                    textEndsWithHyphen: textUntilPosition.endsWith('-'),
+                    lastFiveChars: textUntilPosition.slice(-5)
+                });
+
+                const word = model.getWordUntilPosition(position);
+                console.log('📊 Current word:', word);
+
+                const range = {
+                    startLineNumber: position.lineNumber,
+                    endLineNumber: position.lineNumber,
+                    startColumn: word.startColumn,
+                    endColumn: word.endColumn
+                };
+                console.log('📏 Completion range:', range);
+
+                // Show CSS variable suggestions for any hyphen
+                if (hasSingleHyphen) {
+                    const reason = isWithinVar ? 'within var()' : 'single hyphen';
+                    console.log('🎨 Providing CSS variable suggestions', { reason });
+                    
+                    const suggestions = window.variables.map(variable => {
+                        const varName = variable.startsWith('--') ? variable : `--${variable}`;
+                        const insertText = reason === 'single hyphen' ? 
+                            `var(${varName})` : // Wrap in var() for single hyphen
+                            varName;            // Just the variable name within var()
+                        
+                        return {
+                            label: variable,
+                            kind: monaco.languages.CompletionItemKind.Variable,
+                            insertText,
+                            range: range,
+                            filterText: variable,
+                            sortText: variable,
+                            documentation: `CSS Variable: ${variable}`
+                        };
+                    });
+                    console.log('📝 Generated CSS variable suggestions:', suggestions);
+                    
+                    return { suggestions };
+                }
+
+                // Handle class suggestions
+                if (classMatch) {
+                    console.log('🎯 Processing class suggestions');
+                    const currentClasses = classMatch[1].split(' ');
+                    const lastClass = currentClasses[currentClasses.length - 1];
+                    console.log('Current classes:', currentClasses);
+                    console.log('Last class typed:', lastClass);
+
+                    const filteredClasses = window.classes.filter(className => {
+                        const isUsed = currentClasses.slice(0, -1).includes(className);
+                        const matchesFilter = !lastClass || className.toLowerCase().includes(lastClass.toLowerCase());
+                        return !isUsed && matchesFilter;
+                    });
+                    console.log('🔍 Filtered classes:', filteredClasses);
+
+                    const suggestions = filteredClasses.map(className => ({
+                        label: className,
+                        kind: monaco.languages.CompletionItemKind.Value,
+                        insertText: className,
+                        range: range,
+                        filterText: className,
+                        sortText: className,
+                        documentation: `Tailwind Class: ${className}`
+                    }));
+                    console.log('📝 Generated class suggestions:', suggestions);
+
+                    return { suggestions };
+                }
+
+                console.log('⚠️ No matching context found, returning empty suggestions');
+                return { suggestions: [] };
+            }
+        });
+        console.log('✅ HTML completion provider configured');
+    };
+
+
 
     const initializePreviewScripts = () => {
         const iframe = document.getElementById('preview-frame');
@@ -105,10 +280,8 @@ const ClientBlocksEditor = (function($) {
 
     const updateEditor = () => {
         if (!editor) return;
-        
         const language = ClientBlocksLanguageConfig[currentTab];
         const model = editor.getModel();
-        
         monaco.editor.setModelLanguage(model, language);
         editor.setValue(editorStore[currentTab] || '');
     };
@@ -236,11 +409,14 @@ const ClientBlocksEditor = (function($) {
                 inherit: true,
                 rules: [],
                 colors: {
-                    'editor.background': '#1e1e1e',
+                    'editor.background': '#1e1e1e'
                 }
             });
 
             monaco.editor.setTheme('vs-dark');
+
+            configureCssCompletion(monaco);
+            configureHtmlCompletion(monaco);
 
             editor = monaco.editor.create($(ClientBlocksElements.editor)[0], {
                 ...monacoConfig.base,

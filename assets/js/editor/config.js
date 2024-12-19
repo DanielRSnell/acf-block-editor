@@ -17,7 +17,7 @@ window.ClientBlocksConfig = {
 
 window.ClientBlocksLanguageConfig = {
   php: 'php',
-  template: 'twig',
+  template: 'html',
   css: 'css',
   js: 'javascript',
   context: 'json',

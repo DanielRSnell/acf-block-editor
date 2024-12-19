@@ -1,7 +1,12 @@
 // Iframe function with block refresh on close
+// Parent page script
 (function() {
-    window.openClientBlocksEditor = function(blockId) {
-        const editorUrl = `/wp-admin/admin.php?page=client-blocks-editor&block_id=${blockId}`;
+    window.openClientBlocksEditor = function(block) {
+        console.log('Opening Client Blocks Editor for block:', block);
+
+        const { id, permalink } = block;
+        const editorUrl = `${permalink}?block_id=${id}&artisan=editor&frame=1`;
+        
         const iframe = document.createElement('iframe');
         iframe.src = editorUrl;
         iframe.style.position = 'fixed';
@@ -10,25 +15,21 @@
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
-        iframe.style.zIndex = '9999';
+        iframe.style.zIndex = '9999999999999999';
 
-        const closeButton = document.createElement('button');
-        closeButton.textContent = 'Close Editor';
-        closeButton.style.position = 'fixed';
-        closeButton.style.top = '10px';
-        closeButton.style.right = '10px';
-        closeButton.style.zIndex = '10000';
-        closeButton.addEventListener('click', function() {
-            document.body.removeChild(iframe);
-            document.body.removeChild(closeButton);
-            // Refresh the selected block on close
-            if (window.blockHelpers) {
-                window.blockHelpers.refresh();
+        // Listen for message from iframe
+        window.addEventListener('message', function(event) {
+            // Verify the message is from our iframe
+            if (event.data === 'close_artisan_editor') {
+                document.body.removeChild(iframe);
+                // Refresh the selected block on close
+                if (window.blockHelpers) {
+                    window.blockHelpers.refresh();
+                }
             }
         });
 
         document.body.appendChild(iframe);
-        document.body.appendChild(closeButton);
     };
 })();
 

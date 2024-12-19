@@ -30,6 +30,7 @@ class BlockPreview
                     align-items: center;
                     border-radius: 4px 4px 0 0;
                 }
+
                 .client-blocks-preview-bar code {
                     background: rgba(255, 255, 255, 0.1);
                     padding: 2px 6px;
@@ -61,10 +62,22 @@ class BlockPreview
 
     private static function get_preview_bar($block)
     {
-        $open_editor_button = sprintf(
-            '<button class="open-editor-button" onclick="openClientBlocksEditor(%d)">Open in Editor</button>',
-            esc_attr($block['template_id'])
-        );
+        // Get post using template_id from $block
+        $post = get_post($block['template_id']);
+
+        // Create an object with the following structure
+        $object = [
+            'id' => $post->ID,
+            'name' => $post->post_type,
+            // 'link' should be the frontend link, not the editor link
+            'permalink' => get_post_permalink($post->ID),
+
+        ];
+
+        // stringify the object and escape it properly for HTML attributes
+        $object = htmlspecialchars(json_encode($object), ENT_QUOTES, 'UTF-8');
+
+        $open_editor_button = '<button class="open-editor-button" onclick="openClientBlocksEditor(' . $object . ')">Open Artisan</button>';
 
         return sprintf(
             '<div class="client-blocks-preview-bar">

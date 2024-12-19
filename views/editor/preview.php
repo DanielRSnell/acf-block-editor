@@ -49,6 +49,19 @@ echo do_shortcode($client_template);
     <script id="mock-fields" type="application/json"></script>
     <script id="block-context" type="application/json"></script>
     <script id="timber-context" type="application/json"></script>
+    <script id="editor-preview-script">
+    window.addEventListener('load', function() {
+        window.parent.console.log('🎯 Preview iframe loaded and ready');
+
+        // check for window.windpress
+        if (window.windpress) {
+            window.parent.console.log('🎯 Windpress detected');
+        }
+
+        // Could also signal specific data if needed
+        window.parent.iframeLoaded = true;
+    });
+    </script>
     <?php wp_footer();?>
 </body>
 </html>
